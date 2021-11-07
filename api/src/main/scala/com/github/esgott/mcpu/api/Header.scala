@@ -5,7 +5,7 @@ import sttp.tapir.Codec
 import sttp.tapir.CodecFormat.TextPlain
 
 case class Header(
-    clintId: ClientId,
+    clientId: ClientId,
     clientVersion: ClientVersion,
     clientOs: ClientOs,
     osVersion: OsVersion

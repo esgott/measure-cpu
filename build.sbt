@@ -9,11 +9,19 @@ ThisBuild / scalacOptions ++= Seq(
 
 lazy val root = (project in file("."))
   .aggregate(
-    api
+    api,
+    client
   )
 
 lazy val api = (project in file("api"))
   .settings(
     name := "measure-cpu-api",
     libraryDependencies ++= Dependencies.api
+  )
+
+lazy val client = (project in file("client"))
+  .dependsOn(api)
+  .settings(
+    name := "measure-cpu-client",
+    libraryDependencies ++= Dependencies.client
   )

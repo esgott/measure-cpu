@@ -11,7 +11,7 @@ show the possible causes. These important events are periodic CPU usage events,
 file transfer events (start, end, progress), client app opened/closed, and
 anything that could help us pinpoint the problem.
 
-These events then ingested into an analytical engine, that tries to show use the
+These events then ingested into an analytical engine, that tries to show us the
 most likely cause. A very simple method is to show correlation between the
 derivative of the CPU usage is high, and the occurrence of an event type. It
 could be further narrowed down with grouping by client OS, client version, OS
@@ -36,7 +36,7 @@ the [events](api/src/main/scala/com/github/esgott/mcpu/api/ClientEvent.scala)
 through a [REST API](api/src/main/scala/com/github/esgott/mcpu/api/Api.scala).
 This API is provided in multiple regions, and the DNS routes the client to the
 appropriate endpoint. The client also sends metadata about itself in
-[HTTP headers](api/src/main/scala/com/github/esgott/mcpu/api/Headers.scala).
+[HTTP headers](api/src/main/scala/com/github/esgott/mcpu/api/Header.scala).
 
 Sending the events is a two-step process. As the client might not be able to
 reach the service (e.g. no internet connection, our service is down, not enough
@@ -49,35 +49,47 @@ that haven't been sent yet.
 
 ## Server
 
-The server has distributed event ingestion in multiple regions. The ingestion
-just puts the events onto a message bus (e.g. Kafka), and the events on the
-message bus are collected into one computing region (e.g. Kafka Mirrormaker).
+The server has distributed
+[event ingestion](server/src/main/scala/com/github/esgott/mcpu/server/Ingestion.scala)
+in multiple regions. The ingestion just puts the events onto a message bus (e.g.
+Kafka), and the events on the message bus are collected into one computing
+region (e.g. Kafka Mirrormaker).
 
-The first step in the computing region is to deduplicate the events. Events can
-get duplicated because of client retries, or by Kafka itself (at least once
-guarantee). We consider the `(timestamp, eventType, clientId)` tuple unique, and
-the deduplication can be handled with Bloom filters. From this point we can use
-a message bus that can give us exactly once guarantee  (e.g. Kafka Transactions)
+The first step in the computing region is to
+[deduplicate](server/src/main/scala/com/github/esgott/mcpu/server/Deduplicator.scala)
+the events. Events can get duplicated because of client retries, or by Kafka
+itself (at least once guarantee). We consider
+the `(timestamp, eventType, clientId)` tuple unique, and the deduplication can
+be handled with Bloom filters. From this point we can use a message bus that can
+give us exactly once guarantee  (e.g. Kafka Transactions)
 , so we don't have to worry about duplication.
 
-The next step is to store the data in a storage solution, where the performance
-characteristics match our expectations. As we probably need to query time series
-of events, Prometheus could be a good fit, but it's hard to tell without
-building of proof of concept and measuring our queries.
+The next step is to
+[store](server/src/main/scala/com/github/esgott/mcpu/server/EventStore.scala)
+the data in a storage solution, where the performance characteristics match our
+expectations. As we probably need to query time series of events, Prometheus
+could be a good fit, but it's hard to tell without building of proof of concept
+and measuring our queries.
 
-The final step is a tool that helps us analyze the data. In case of Prometheus,
-Grafana is a straightforward choice. We can build graphs that can visualize the
-relation between the events and the CPU usage.
+The final step is a
+[tool](server/src/main/scala/com/github/esgott/mcpu/server/Analytics.scala) that
+helps us analyze the data. In case of Prometheus, Grafana is a straightforward
+choice. We can build graphs that can visualize the relation between the events
+and the CPU usage.
 
-The ingestion has to know the last event we have seen for a client in any
-region. Fortunately, eventual consistency is enough in this case. Any cheap
-database that can handle this multi-region situation with eventual consistency
-is good enough (e.g. AWS Dynamo DB).
+The ingestion has to know the
+[last event](server/src/main/scala/com/github/esgott/mcpu/server/LastSeen.scala)
+we have seen for a client in any region. Fortunately, eventual consistency is
+enough in this case. Any cheap database that can handle this multi-region
+situation with eventual consistency is good enough (e.g. AWS Dynamo DB).
+
+The above steps can be implemented in separate microservices, such that we can
+scale them differently.
 
 
 ## Advantages of this design
 
-* The API is designed in a CQRS fashion. This allows us to scala the writes (
+* The API is designed in a CQRS fashion. This allows us to scale the writes (
   event ingestion) and the reads (data analyzation) differently, as these have
   quite different characteristics.
 * The client and the server can make progress without the other
@@ -88,3 +100,11 @@ is good enough (e.g. AWS Dynamo DB).
 ## Architecture diagram
 
 
+## Implementation
+
+The implementation in this repository contains an API, a client that
+periodically sends fake CPU measurement events, and a server where each
+microservice is its own typeclass. Each of them has a very simple
+implementation, and some very basic analytics queries are implemented as well.
+This implementation does not try to be complete, it rather tries to provide a
+proof of concept and prove that the shapes fit together nicely.

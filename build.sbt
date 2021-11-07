@@ -10,7 +10,8 @@ ThisBuild / scalacOptions ++= Seq(
 lazy val root = (project in file("."))
   .aggregate(
     api,
-    client
+    client,
+    server
   )
 
 lazy val api = (project in file("api"))
@@ -24,4 +25,12 @@ lazy val client = (project in file("client"))
   .settings(
     name := "measure-cpu-client",
     libraryDependencies ++= Dependencies.client
+  )
+
+lazy val server = (project in file("server"))
+  .dependsOn(api)
+  .settings(
+    name := "measure-cpu-server",
+    libraryDependencies ++= Dependencies.server,
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
   )

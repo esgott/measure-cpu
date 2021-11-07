@@ -16,10 +16,14 @@ object Server extends CommandIOApp(name = "measure-cpu-server", header = "Measur
   )
 
   private val hostOpts: Opts[String] =
-    Opts.option[String](long = "host", short = "h", metavar = "host", help = "Host address")
+    Opts
+      .option[String](long = "host", short = "h", metavar = "host", help = "Host address")
+      .withDefault("localhost")
 
   private val portOpts: Opts[Int] =
-    Opts.option[Int](long = "port", short = "p", metavar = "port", help = "Port")
+    Opts
+      .option[Int](long = "port", short = "p", metavar = "port", help = "Port")
+      .withDefault(8080)
 
   private val bfNumEntriesOpts: Opts[Int] =
     Opts

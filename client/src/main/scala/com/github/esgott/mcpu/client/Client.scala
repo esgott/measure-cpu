@@ -34,7 +34,7 @@ object Client
     Opts
       .option[String](long = "server-uri", short = "s", metavar = "server-uri", help = "Server URI")
       .mapValidated(u => Uri.safeApply(u).toValidated.leftMap(NonEmptyList.one))
-      .withDefault(uri"http://localhost")
+      .withDefault(uri"http://localhost:8080")
 
   private val opts: Opts[Config] =
     (clientIdOps, serverUriOps).mapN(Config.apply)

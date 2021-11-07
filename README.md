@@ -99,6 +99,8 @@ scale them differently.
 
 ## Architecture diagram
 
+![Architecture Diagram](./Measure%20CPU%20Architecture%20Diagram.drawio.svg)
+
 
 ## Implementation
 

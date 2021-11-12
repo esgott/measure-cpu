@@ -1,5 +1,7 @@
 package com.github.esgott.mcpu.server
 
+import java.time.Instant
+
 import cats.ApplicativeError
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
@@ -7,10 +9,8 @@ import cats.syntax.all._
 import com.github.esgott.mcpu.api.ClientEvent._
 import com.github.esgott.mcpu.api.Header.ClientId
 import com.twitter.algebird._
-import io.circe.syntax._
 import fs2.Pipe
-
-import java.time.Instant
+import io.circe.syntax._
 
 trait Deduplicator[F[_]] {
   def check(event: MessageBusEvent): F[Option[MessageBusEvent]]

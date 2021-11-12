@@ -1,5 +1,7 @@
 package com.github.esgott.mcpu.server
 
+import java.time.{Duration, Instant}
+
 import cats.Monad
 import cats.data.{EitherT, NonEmptyList}
 import cats.syntax.all._
@@ -7,8 +9,6 @@ import com.github.esgott.mcpu.api.ClientEvent.CpuMeasurement
 import com.github.esgott.mcpu.api.Header.ClientId
 import com.github.esgott.mcpu.api.SuspiciousEvents.SuspiciousEvent
 import com.github.esgott.mcpu.api._
-
-import java.time.{Duration, Instant}
 
 trait Analytics[F[_]] {
   def recentCpuUsage(range: TimeRange): EitherT[F, ApiError, CpuReport]

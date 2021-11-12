@@ -1,10 +1,10 @@
 package com.github.esgott.mcpu.api
 
+import java.time.Instant
+
 import io.circe.Codec
 import io.circe.generic.JsonCodec
 import io.circe.generic.extras.semiauto.deriveConfiguredCodec
-
-import java.time.Instant
 
 sealed trait ClientEvent {
   def time: Instant

@@ -1,8 +1,8 @@
 package com.github.esgott.mcpu.api
 
-import io.circe.generic.JsonCodec
-
 import java.time.Instant
+
+import io.circe.generic.JsonCodec
 
 @JsonCodec
 case class TimeRange(

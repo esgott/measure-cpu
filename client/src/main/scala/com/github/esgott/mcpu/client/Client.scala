@@ -1,5 +1,8 @@
 package com.github.esgott.mcpu.client
 
+import java.time.Instant
+import scala.concurrent.duration._
+
 import cats.data.NonEmptyList
 import cats.effect.{ExitCode, IO}
 import cats.syntax.all._
@@ -8,11 +11,8 @@ import com.github.esgott.mcpu.api.Header.ClientId
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
 import fs2.Stream
-import sttp.model.Uri
 import sttp.client3._
-
-import java.time.Instant
-import scala.concurrent.duration._
+import sttp.model.Uri
 
 object Client
     extends CommandIOApp(

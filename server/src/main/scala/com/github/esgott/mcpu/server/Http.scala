@@ -1,16 +1,16 @@
 package com.github.esgott.mcpu.server
 
+import scala.concurrent.ExecutionContext
+
 import cats.effect.{Concurrent, ConcurrentEffect, ContextShift, Resource, Timer}
 import cats.syntax.all._
-import com.github.esgott.mcpu.api.{AnalyticsApi, Api}
 import com.github.esgott.mcpu.api.ApiError.NotFound
+import com.github.esgott.mcpu.api.{AnalyticsApi, Api}
 import org.http4s.HttpRoutes
 import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.implicits._
 import org.http4s.server.{Router, Server}
 import sttp.tapir.server.http4s.Http4sServerInterpreter
-
-import scala.concurrent.ExecutionContext
 
 trait Http[F[_]] {
   def routes: HttpRoutes[F]
